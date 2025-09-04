@@ -1,0 +1,157 @@
+<?php
+require_once __DIR__."/../model/bebidasModel.php";
+require_once __DIR__ . '/../utils/helpers.php';
+
+
+class BebidaDAO {
+    private $conn;
+
+    public function __construct($db) {
+        $this->conn = $db;
+    }
+
+    public function saveEstoque(Bebida $bebida) {
+        $query = "INSERT INTO bebidas (nome, tipo, volume, responsavel) VALUES (:nome, :tipo, :volume, :responsavel)";
+        
+        try {
+            if (!$this->conn) {
+                throw new Exception("Conexão com o banco não foi estabelecida.");
+            }
+
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":nome", $bebida->nome);
+            $stmt->bindParam(":tipo", $bebida->tipo);
+            $stmt->bindParam(":volume", $bebida->volume);
+            $stmt->bindParam(":responsavel", $bebida->responsavel);
+
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                var_dump($stmt->errorInfo());
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            var_dump("Erro PDO: " . $e->getMessage());
+            die;
+        } catch (Exception $e) {
+            var_dump("Erro: " . $e->getMessage());
+            die;
+        }
+    }
+
+    public function updateEstoque(Bebida $bebida) {
+        $query = "UPDATE bebidas SET nome = :nome, tipo = :tipo, volume = :volume, responsavel = :responsavel WHERE id = :id";
+        
+        try {
+            if (!$this->conn) {
+                throw new Exception("Conexão com o banco não foi estabelecida.");
+            }
+
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":nome", $bebida->nome);
+            $stmt->bindParam(":tipo", $bebida->tipo);
+            $stmt->bindParam(":volume", $bebida->volume);
+            $stmt->bindParam(":responsavel", $bebida->responsavel);
+            $stmt->bindParam(":id", $bebida->id);
+
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                var_dump($stmt->errorInfo());
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            var_dump("Erro PDO: " . $e->getMessage());
+            die;
+        } catch (Exception $e) {
+            var_dump("Erro: " . $e->getMessage());
+            die;
+        }
+    }
+
+    public function deleteEstoque($id) {
+        $query = "DELETE FROM bebidas WHERE id = :id";
+        
+        try {
+            if (!$this->conn) {
+                throw new Exception("Conexão com o banco não foi estabelecida.");
+            }
+
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":id", $id);
+
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                var_dump($stmt->errorInfo());
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            var_dump("Erro PDO: " . $e->getMessage());
+            die;
+        } catch (Exception $e) {
+            var_dump("Erro: " . $e->getMessage());
+            die;
+        }
+    }
+
+    public function getEstoqueById($id) {
+        $query = "SELECT * FROM bebidas WHERE id = :id";
+        
+        try {
+            if (!$this->conn) {
+                throw new Exception("Conexão com o banco não foi estabelecida.");
+            }
+
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":id", $id);
+
+            if ($stmt->execute()) {
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                var_dump($stmt->errorInfo());
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            var_dump("Erro PDO: " . $e->getMessage());
+            die;
+        } catch (Exception $e) {
+            var_dump("Erro: " . $e->getMessage());
+            die;
+        }
+    }
+
+    public function getEstoque($offset,$limit,$busca) {
+        
+        $sql = "SELECT * FROM bebidas";
+
+        if(is_array($busca) && count($busca) > 0){
+			$where  = prepareWhere($busca);
+			$sql   .= " WHERE ".$where."";
+		}
+
+        $sql .= " LIMIT $offset, $limit";
+
+        try {
+            if (!$this->conn) {
+                throw new Exception("Conexão com o banco não foi estabelecida.");
+            }
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (Exception $e) {
+            var_dump("Erro: " . $e->getMessage());
+            die;
+        }
+    }
+}
