@@ -7,10 +7,11 @@ CREATE TABLE bebidas (
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE historico (
+CREATE TABLE movimentacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
     bebida_id INT,
     tipo ENUM('entrada','saida') NOT NULL,
+    excluido INT NOT NULL DEFAULT 0,
     volume INT NOT NULL,
     responsavel VARCHAR(100) NOT NULL,
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

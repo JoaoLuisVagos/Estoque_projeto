@@ -1,8 +1,18 @@
 <?php
-function prepareWhere(array $filtros): string {
-    $where = [];
-    foreach ($filtros as $coluna => $valor) {
-        $where[] = "$coluna = :$coluna";
+function prepareWhere($busca) {
+    $whereParts = [];
+    $params = [];
+
+    $ignore = ["orderBy", "direction", "offset", "limit"];
+
+    foreach ($busca as $key => $value) {
+        if (in_array($key, $ignore)) {
+            continue;
+        }
+
+        $whereParts[] = "$key = :$key";
+        $params[":$key"] = $value;
     }
-    return $where ? "WHERE " . implode(" AND ", $where) : "";
+
+    return implode(" AND ", $whereParts);
 }

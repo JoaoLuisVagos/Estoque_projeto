@@ -59,7 +59,7 @@ class BebidaController {
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
 
-        $bebida = $dao->getEstoqueById($id);
+        $bebida = $dao->getEstoqueById($id, $_GET);
         if($bebida)
             Flight::json($bebida);
         else

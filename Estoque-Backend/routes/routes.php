@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 require_once __DIR__."/../config/database.php";
 require_once __DIR__."/../controller/bebidasController.php";
-require_once __DIR__."/../controller/historicoController.php";
+require_once __DIR__."/../controller/movimentacaoController.php";
 
 //Rotas para criação de bebidas
 Flight::route('POST /bebida', array('BebidaController','saveEstoque'));
@@ -11,11 +11,12 @@ Flight::route('DELETE /bebida/@id/delete', array('BebidaController','deleteEstoq
 Flight::route('GET /bebida/@id/getByID', array('BebidaController','getEstoqueById'));
 Flight::route('GET /bebidas', array('BebidaController','getAllEstoque'));
 
-//Rotas Historico
-Flight::route('POST /historico', array('HistoricoController','saveHistorico'));
-Flight::route('POST /historico/@id/update', array('HistoricoController','updateHistorico'));
-Flight::route('DELETE /historico/@id/delete', array('HistoricoController','deleteHistorico'));
-Flight::route('GET /historico/@id/getByID', array('HistoricoController','getHistoricoById'));
-Flight::route('GET /historico', array('HistoricoController','getAllHistorico'));
+//Rotas Movimentacao
+Flight::route('POST /movimentacao', array('MovimentacaoController','saveMovimentacao'));
+Flight::route('POST /movimentacao/@id/update', array('MovimentacaoController','updateMovimentacao'));
+Flight::route('DELETE /movimentacao/@id/delete', array('MovimentacaoController','deleteMovimentacao'));
+Flight::route('GET /movimentacao/@id/getByID', array('MovimentacaoController','getMovimentacaoById'));
+Flight::route('GET /movimentacao/bebida/@id/getByID', array('MovimentacaoController','getMovimentacaoByIdBebida'));
+Flight::route('GET /movimentacoes', array('MovimentacaoController','getAllMovimentacao'));
 
 

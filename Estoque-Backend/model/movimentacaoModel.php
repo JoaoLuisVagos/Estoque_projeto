@@ -1,5 +1,5 @@
 <?php
-class Historico {
+class Movimentacao {
     public $id;
     public $bebida_id;
     public $tipo;

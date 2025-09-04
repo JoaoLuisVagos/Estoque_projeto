@@ -101,8 +101,13 @@ class BebidaDAO {
         }
     }
 
-    public function getEstoqueById($id) {
+    public function getEstoqueById($id, $busca) {
         $query = "SELECT * FROM bebidas WHERE id = :id";
+
+        if(is_array($busca) && count($busca) > 0){
+			$where  = prepareWhere($busca);
+			$query   .= " AND ".$where."";
+		}
         
         try {
             if (!$this->conn) {
