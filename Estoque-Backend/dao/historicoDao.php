@@ -1,18 +1,16 @@
 <?php
-require_once __DIR__."/../model/bebidasModel.php";
+require_once __DIR__."/../models/Historico.php";
 require_once __DIR__ . '/../utils/helpers.php';
 
-
-class BebidaDAO {
+class HistoricoDAO {
     private $conn;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    public function saveEstoque(Bebida $bebida) {
-        $query = "INSERT INTO bebidas (nome, tipo, volume, responsavel) VALUES (:nome, :tipo, :volume, :responsavel)";
-        
+    public function saveHistorico(Historico $h) {
+        $query = "INSERT INTO historico (bebida_id, acao, volume, responsavel) VALUES (:bebida_id, :acao, :volume, :responsavel)";
         try {
             if (!$this->conn) {
                 throw new Exception("Conexão com o banco não foi estabelecida.");
@@ -20,10 +18,10 @@ class BebidaDAO {
 
             $stmt = $this->conn->prepare($query);
 
-            $stmt->bindParam(":nome", $bebida->nome);
-            $stmt->bindParam(":tipo", $bebida->tipo);
-            $stmt->bindParam(":volume", $bebida->volume);
-            $stmt->bindParam(":responsavel", $bebida->responsavel);
+            $stmt->bindParam(":bebida_id", $h->bebida_id);
+            $stmt->bindParam(":acao", $h->tipo);
+            $stmt->bindParam(":volume", $h->volume);
+            $stmt->bindParam(":responsavel", $h->responsavel);
 
             if ($stmt->execute()) {
                 return true;
@@ -41,9 +39,8 @@ class BebidaDAO {
         }
     }
 
-    public function updateEstoque(Bebida $bebida) {
-        $query = "UPDATE bebidas SET nome = :nome, tipo = :tipo, volume = :volume, responsavel = :responsavel WHERE id = :id";
-        
+    public function updateHistorico(Historico $h) {
+        $query = "UPDATE historico SET bebida_id = :bebida_id, acao = :acao, volume = :volume, responsavel = :responsavel WHERE id = :id";
         try {
             if (!$this->conn) {
                 throw new Exception("Conexão com o banco não foi estabelecida.");
@@ -51,11 +48,11 @@ class BebidaDAO {
 
             $stmt = $this->conn->prepare($query);
 
-            $stmt->bindParam(":nome", $bebida->nome);
-            $stmt->bindParam(":tipo", $bebida->tipo);
-            $stmt->bindParam(":volume", $bebida->volume);
-            $stmt->bindParam(":responsavel", $bebida->responsavel);
-            $stmt->bindParam(":id", $bebida->id);
+            $stmt->bindParam(":bebida_id", $h->bebida_id);
+            $stmt->bindParam(":acao", $h->tipo);
+            $stmt->bindParam(":volume", $h->volume);
+            $stmt->bindParam(":responsavel", $h->responsavel);
+            $stmt->bindParam(":id", $h->id);
 
             if ($stmt->execute()) {
                 return true;
@@ -73,9 +70,8 @@ class BebidaDAO {
         }
     }
 
-    public function deleteEstoque($id) {
-        $query = "DELETE FROM bebidas WHERE id = :id";
-        
+    public function deleteHistorico($id) {
+        $query = "DELETE FROM historico WHERE id = :id";
         try {
             if (!$this->conn) {
                 throw new Exception("Conexão com o banco não foi estabelecida.");
@@ -101,9 +97,8 @@ class BebidaDAO {
         }
     }
 
-    public function getEstoqueById($id) {
-        $query = "SELECT * FROM bebidas WHERE id = :id";
-        
+    public function getHistoricoById($id) {
+        $query = "SELECT * FROM historico WHERE id = :id";
         try {
             if (!$this->conn) {
                 throw new Exception("Conexão com o banco não foi estabelecida.");
@@ -129,14 +124,23 @@ class BebidaDAO {
         }
     }
 
-    public function getAllEstoque($offset,$limit,$busca) {
-        
-        $query = "SELECT * FROM bebidas";
+    public function getAllHistorico($offset,$limit,$busca = []) {
+        $allowed = ["data_registro", "acao"];
+
+        if (!in_array($busca["orderBy"], $allowed)) $orderBy = "data_registro";
+
+        $direction = strtoupper($busca["direction"]) === "ASC" ? "ASC" : "DESC";
+
+        $query = "SELECT h.id, b.nome as bebida, h.acao, h.volume, h.responsavel, h.data_registro
+                  FROM historico h
+                  JOIN bebidas b ON b.id = h.bebida_id";
 
         if(is_array($busca) && count($busca) > 0){
 			$where  = prepareWhere($busca);
 			$query   .= " WHERE ".$where."";
 		}
+
+        $query .= " ORDER BY $orderBy $direction";
 
         $query .= " LIMIT $offset, $limit";
 

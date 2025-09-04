@@ -59,25 +59,25 @@ class BebidaController {
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
 
-        $produto = $dao->getEstoqueById($id);
-        if($produto)
-            Flight::json($produto);
+        $bebida = $dao->getEstoqueById($id);
+        if($bebida)
+            Flight::json($bebida);
         else
-            Flight::halt(404,'Produtos não encontrados');
+            Flight::halt(404,'bebida não encontrada');
     }
 
-    public static function getEstoque() {
+    public static function getAllEstoque() {
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
 
         $offset = $_GET['offset'] ?? 0;
         $limit  = $_GET['limit'] ?? 10;
 
-        $produtos = $dao->getEstoque($offset, $limit, $_GET);
-        if($produtos)
-            Flight::json($produtos);
+        $bebidas = $dao->getAllEstoque($offset, $limit, $_GET);
+        if($bebidas)
+            Flight::json($bebidas);
         else
-            Flight::halt(404,'Produtos não encontrados');
+            Flight::halt(404,'Nebidas não encontradas');
     }
 
 }
