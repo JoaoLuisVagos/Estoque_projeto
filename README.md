@@ -103,7 +103,7 @@ Achei o desafio bem estruturado e realista, pois simula um cenário comum de ges
 
 **2. Alteraria algo no desafio? O que sugeriria para avaliar melhor suas habilidades?**
 
-Não alteraria em nada o desafio.
+Não mudaria nada, porem acrescentaria algumas funcionalidades como excluir, editar.
 
 No geral, gostei bastante do desafio e acredito que ele avalia bem as habilidades técnicas e de arquitetura, tomei a liberdade de adicionar algumas funcionalidades como edição e uma busca com filtros mais robusta, espero que gostem.
 
