@@ -32,6 +32,7 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
       showToast("Bebida excluída com sucesso!", "success");
       if (selectedBebida?.id === id) setSelectedBebida(null);
       load();
+      setRefresh && setRefresh(r => !r);
     } catch (err) {
       showToast(err.response?.data?.error || "Erro ao excluir bebida", "danger");
     }
