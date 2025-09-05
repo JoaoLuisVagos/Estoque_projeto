@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../../services/api";
 import { Row, Col, Button, Form, Card } from "react-bootstrap";
+import { FaSearch } from "react-icons/fa";
 
 export default function MovimentacaoForm({ onSearch, showToast }) {
   const [form, setForm] = useState({
@@ -11,18 +12,16 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.bebida_id) {
-      showToast("Informe o ID da bebida", "danger");
-      return;
-    }
-
     try {
-      const res = await api.get(`/movimentacao/bebida/${form.bebida_id}/getByID`, {
-        params: {
-          bebida_id: form.bebida_id,
-          tipo: form.tipo,
-        },
-      });
+      let url = form.bebida_id ? `/movimentacao/bebida/${form.bebida_id}/getByID?excluido=0` : "/movimentacoes?excluido=0";
+      let payload = {};
+      if (form.tipo) {
+        payload.tipo = form.tipo;
+      }
+      if(form.bebida_id) {
+        payload.bebida_id = form.bebida_id;
+      }
+      const res = await api.get(url, { params: payload });
 
       onSearch(res.data);
     } catch (err) {
@@ -34,7 +33,7 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
   return (
     <Card className="shadow-sm border-0 mb-4">
       <Card.Body>
-        <h4 className="mb-4">🔍 Buscar Movimentações</h4>
+        <h4 className="mb-4"><FaSearch /> Buscar Movimentações</h4>
         <Form onSubmit={handleSubmit}>
           <Row className="g-3">
             <Col lg={6} md={6}>
@@ -47,7 +46,6 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
                   onChange={(e) =>
                     setForm({ ...form, bebida_id: e.target.value })
                   }
-                  required
                 />
               </Form.Group>
             </Col>
@@ -71,7 +69,7 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
 
           <div className="d-flex justify-content-end mt-4">
             <Button type="submit" variant="primary">
-              🔎 Buscar
+              <FaSearch /> Buscar
             </Button>
           </div>
         </Form>

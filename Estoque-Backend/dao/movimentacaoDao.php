@@ -247,7 +247,7 @@ class MovimentacaoDAO {
                 JOIN bebidas b ON b.id = h.bebida_id";
 
         if (!empty($whereExtra)) {
-            $query .= " AND " . $whereExtra;
+            $query .= " WHERE " . $whereExtra;
         }
 
         $query .= " ORDER BY $orderBy $direction";
@@ -264,6 +264,10 @@ class MovimentacaoDAO {
                 $stmt->bindValue(':excluido', $busca['excluido'], PDO::PARAM_INT);
             }
 
+            if (isset($busca['tipo'])) {
+                $stmt->bindValue(':tipo', $busca['tipo'], PDO::PARAM_STR);
+            }
+        
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
 

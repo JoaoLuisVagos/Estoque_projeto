@@ -8,6 +8,7 @@ class BebidaController {
 
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
+        $movDao = new MovimentacaoDAO($db);
 
         $tipo = $data['tipo'];
         $volume = $data['volume'];
@@ -21,13 +22,24 @@ class BebidaController {
 
         $bebida = new Bebida();
         $bebida->nome = $data['nome'];
-        $bebida->tipo = $data['tipo'];
+        $bebida->tipo_bebida = $data['tipo'];
         $bebida->volume = $volumeInicial;
         $bebida->estoque_total = $volumeInicial;
         $bebida->responsavel = $data['responsavel'];
 
         try {
             $dao->saveEstoque($bebida);
+
+            if ($volume > 0) {
+                $mov = new Movimentacao();
+                $mov->bebida_id = $bebida->id;
+                $mov->tipo = "entrada";
+                $mov->volume = $volume;
+                $mov->responsavel = $data['responsavel'];
+
+                $movDao->saveMovimentacao($mov);
+            }
+
             Flight::halt(201);
         } catch(Exception $e) {
             Flight::halt(500, $e->getMessage());
@@ -43,7 +55,7 @@ class BebidaController {
         $bebida = new Bebida();
         $bebida->id = $id;
         $bebida->nome = $data['nome'];
-        $bebida->tipo = $data['tipo'];
+        $bebida->tipo_bebida = $data['tipo'];
         $bebida->volume = $data['volume'];
         $bebida->responsavel = $data['responsavel'];
 
@@ -90,7 +102,7 @@ class BebidaController {
         if($bebidas)
             Flight::json($bebidas);
         else
-            Flight::halt(404,'Nebidas não encontradas');
+            Flight::halt(404,'Bebidas não encontradas');
     }
 
     public function getTotalByTipo($tipo) {

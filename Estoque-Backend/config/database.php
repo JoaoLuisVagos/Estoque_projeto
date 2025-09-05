@@ -1,9 +1,9 @@
 <?php
 class Database {
-    private $host = "localhost";
+    private $host = "mysql";
     private $db_name = "estoque";
-    private $username = "root";
-    private $password = "";
+    private $username = "estoque_user";
+    private $password = "estoque_pass";
     public $conn;
 
     public function getConnection() {

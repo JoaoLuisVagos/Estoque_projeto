@@ -3,11 +3,12 @@ import { Table, Button, Modal, Form, Col } from "react-bootstrap";
 import api from "../../services/api";
 import MovimentacaoList from "../movimentacoes/MovimentacaoList";
 import MovimentacaoFormSave from "../movimentacoes/MovimentacaoFormSave";
-import { FaEdit, FaTrash, FaPlus, FaList } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaList, FaBox } from 'react-icons/fa';
+import BebidaForm from "./BebidaForm";
 
-export default function BebidaList({ showToast }) {
+export default function BebidaList({ showToast , onEdit}) {
   const [bebidas, setBebidas] = useState([]);
-  const [tipo, setTipo] = useState("alcoolica");
+  const [tipo_bebida, setTipo_bebida] = useState("alcoolica");
   const [selectedBebida, setSelectedBebida] = useState(null);
 
   const [showAddMovModalSave, setShowAddMovModalSave] = useState(false);
@@ -18,7 +19,7 @@ export default function BebidaList({ showToast }) {
     try {
       const res = await api.get("/bebidas");
       setBebidas(
-        res.data.filter(b => b.tipo === tipo && String(b.excluido) === "0")
+        res.data.filter(b => b.tipo_bebida === tipo_bebida && String(b.excluido) === "0")
       );
     } catch (err) {
       showToast(err.response?.data?.error || "Erro ao carregar bebidas", "danger");
@@ -29,6 +30,7 @@ export default function BebidaList({ showToast }) {
     try {
       await api.delete(`/bebida/${id}/delete`);
       showToast("Bebida excluída com sucesso!", "success");
+      if (selectedBebida?.id === id) setSelectedBebida(null);
       load();
     } catch (err) {
       showToast(err.response?.data?.error || "Erro ao excluir bebida", "danger");
@@ -41,20 +43,25 @@ export default function BebidaList({ showToast }) {
 
   useEffect(() => {
     load();
-  }, [tipo]);
+  }, [tipo_bebida]);
 
   return (
     <div>
-      <h2 className="mb-3">📦 Estoque de Bebidas</h2>
+      <h2 className="mb-3"><FaBox /> Estoque de Bebidas</h2>
 
+      {/* Seletor de tipo de bebida */}
       <Col lg={2} className="mb-3">
-        <Form.Select className="mb-3" value={tipo} onChange={e => setTipo(e.target.value)}>
+        <Form.Select
+          value={tipo_bebida}
+          onChange={e => setTipo_bebida(e.target.value)}
+        >
           <option value="alcoolica">Alcoólicas</option>
           <option value="nao-alcoolica">Não Alcoólicas</option>
         </Form.Select>
       </Col>
 
-      <div className="table-responsive">
+      {/* Tabela de bebidas */}
+      <div className="table-responsive mt-4">
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -62,7 +69,7 @@ export default function BebidaList({ showToast }) {
               <th>Nome</th>
               <th width="150px">Estoque Atual</th>
               <th width="400px">Responsável</th>
-              <th width="150px" className="text-center">Ações</th>
+              <th width="200px" className="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -75,8 +82,17 @@ export default function BebidaList({ showToast }) {
                   <td>{b.responsavel}</td>
                   <td className="text-center">
                     <Button
+                      variant="primary"
+                      size="sm"
+                      className="align-items-center justify-content-center"
+                      onClick={() => onEdit(b)}
+                    >
+                      <FaEdit />
+                    </Button>{" "}
+                    <Button
                       variant="info"
                       size="sm"
+                      className="align-items-center justify-content-center"
                       onClick={() => {
                         setSelectedBebida(b);
                         setShowAddMovModalSave(true);
@@ -87,6 +103,7 @@ export default function BebidaList({ showToast }) {
                     <Button
                       variant="warning"
                       size="sm"
+                      className="align-items-center justify-content-center"
                       onClick={() => {
                         setSelectedBebida(b);
                         setShowAddMovModalList(true);
@@ -97,6 +114,7 @@ export default function BebidaList({ showToast }) {
                     <Button
                       variant="danger"
                       size="sm"
+                      className="align-items-center justify-content-center"
                       onClick={() => remove(b.id)}
                     >
                       <FaTrash />
@@ -121,7 +139,7 @@ export default function BebidaList({ showToast }) {
         </Modal.Header>
         <Modal.Body>
           {selectedBebida && (
-            <MovimentacaoList bebidaId={selectedBebida.id} tipo={tipo} />
+            <MovimentacaoList bebidaId={selectedBebida.id} tipo_bebida={tipo_bebida} />
           )}
         </Modal.Body>
       </Modal>
@@ -144,7 +162,6 @@ export default function BebidaList({ showToast }) {
           )}
         </Modal.Body>
       </Modal>
-
     </div>
   );
 }

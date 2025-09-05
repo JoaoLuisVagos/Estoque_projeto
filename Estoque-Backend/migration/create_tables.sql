@@ -1,7 +1,7 @@
 CREATE TABLE bebidas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    tipo ENUM('alcoolica', 'nao-alcoolica') NOT NULL,
+    tipo_bebida ENUM('alcoolica', 'nao-alcoolica') NOT NULL,
     volume INT NOT NULL,
     estoque_total INT NOT NULL DEFAULT 0,
     excluido INT NOT NULL DEFAULT 0,

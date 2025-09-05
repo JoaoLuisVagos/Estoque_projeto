@@ -40,7 +40,7 @@ class MovimentacaoController {
             $bebidaDao->updateEstoqueTotal($bebidaId, $novoEstoque);
 
             $dao->saveMovimentacao($h);
-            Flight::halt(201); // sucesso
+            Flight::halt(201);
         } catch(Exception $e) {
             Flight::halt(500, $e->getMessage());
         }

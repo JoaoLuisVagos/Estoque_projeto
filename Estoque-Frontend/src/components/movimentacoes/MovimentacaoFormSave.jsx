@@ -3,7 +3,7 @@ import api from "../../services/api";
 import { Row, Col, Button, Form, Card } from "react-bootstrap";
 import { useEffect } from "react";
 
-export default function MovimentacaoForm({ onSave, showToast , bebida}) {
+export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
     const [form, setForm] = useState({
         bebida_id: bebida?.id || "",
         tipo: "entrada",
@@ -21,25 +21,25 @@ export default function MovimentacaoForm({ onSave, showToast , bebida}) {
         e.preventDefault();
 
         if (!form.bebida_id || !form.volume || !form.responsavel) {
-        showToast("Preencha todos os campos obrigatórios", "danger");
-        return;
+            showToast("Preencha todos os campos obrigatórios", "danger");
+            return;
         }
 
         try {
-        await api.post("/movimentacao", {
-            bebida_id: Number(form.bebida_id),
-            tipo: form.tipo,
-            volume: Number(form.volume),
-            responsavel: form.responsavel,
-        });
+            await api.post("/movimentacao", {
+                bebida_id: Number(form.bebida_id),
+                tipo: form.tipo,
+                volume: Number(form.volume),
+                responsavel: form.responsavel,
+            });
 
-        showToast("Movimentação salva com sucesso!", "success");
+            showToast("Movimentação salva com sucesso!", "success");
 
-        setForm({ bebida_id: "", tipo: "entrada", volume: "", responsavel: "" });
-        onSave();
+            setForm({ bebida_id: "", tipo: "entrada", volume: "", responsavel: "" });
+            onSave();
         } catch (err) {
-        const mensagemErro = err.response?.data?.error || "Erro desconhecido";
-        showToast(mensagemErro, "danger");
+            const mensagemErro = err.response?.data?.error || "Erro desconhecido";
+            showToast(mensagemErro, "danger");
         }
     };
 
