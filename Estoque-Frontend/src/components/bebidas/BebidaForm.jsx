@@ -15,7 +15,7 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
       setForm({
         nome: bebida.nome || "",
         tipo: bebida.tipo_bebida || "alcoolica",
-        volume: bebida.volume || "",
+        volume: bebida.estoque_total || "",
         responsavel: bebida.responsavel || "",
       });
     } else {

@@ -172,7 +172,14 @@ class MovimentacaoDAO {
             }
         }
 
-        $query = "SELECT h.*, b.nome as bebida 
+        $allowed = ["data_registro", "tipo"];
+        $orderBy = "data_registro";
+        if (isset($busca["orderBy"]) && in_array($busca["orderBy"], $allowed)) {
+            $orderBy = $busca["orderBy"];
+        }
+        $direction = (isset($busca["direction"]) && strtoupper($busca["direction"]) === "ASC") ? "ASC" : "DESC";
+
+        $query = "SELECT h.*, b.nome as bebida, b.tipo_bebida as tipo_bebida
           FROM movimentacao as h
           INNER JOIN bebidas as b ON h.bebida_id = b.id
           WHERE b.id = :id";
@@ -181,6 +188,8 @@ class MovimentacaoDAO {
             $whereExtra = str_replace("tipo =", "h.tipo =", $whereExtra);
             $query .= " AND " . $whereExtra;
         }
+
+        $query .= " ORDER BY $orderBy $direction";
 
 
         try {
@@ -242,7 +251,7 @@ class MovimentacaoDAO {
         $direction = (isset($busca["direction"]) && strtoupper($busca["direction"]) === "ASC") ? "ASC" : "DESC";
 
        
-        $query = "SELECT h.*, b.nome as bebida
+        $query = "SELECT h.*, b.nome as bebida, b.tipo_bebida as tipo_bebida
                 FROM movimentacao h
                 JOIN bebidas b ON b.id = h.bebida_id";
 

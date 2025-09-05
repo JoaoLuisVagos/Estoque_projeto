@@ -54,6 +54,7 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
               <th className="text-center">#</th>
               <th className="text-center">Tipo</th>
               <th className="text-center">ID Bebida</th>
+              <th className="text-center">Tipo Bebida</th>
               <th width="20%" className="text-center">Bebida</th>
               <th>Volume</th>
               <th>Responsável</th>
@@ -67,6 +68,7 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
                   <td className="text-center">{m.id}</td>
                   <td className="text-center">{m.tipo === "saida" ? "Saida" : "Entrada"}</td>
                   <td className="text-center">{m.bebida_id}</td>
+                  <td className="text-center">{m.tipo_bebida === "alcoolica" ? "Alcoolica" : "Nao Alcoolica"}</td>
                   <td >{m.bebida}</td>
                   <td>{m.volume} L</td>
                   <td>{m.responsavel}</td>

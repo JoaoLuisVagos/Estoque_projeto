@@ -6,7 +6,7 @@ import MovimentacaoFormSave from "../movimentacoes/MovimentacaoFormSave";
 import { FaEdit, FaTrash, FaPlus, FaList, FaBox } from 'react-icons/fa';
 import BebidaForm from "./BebidaForm";
 
-export default function BebidaList({ showToast , onEdit}) {
+export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) {
   const [bebidas, setBebidas] = useState([]);
   const [tipo_bebida, setTipo_bebida] = useState("alcoolica");
   const [selectedBebida, setSelectedBebida] = useState(null);
@@ -158,6 +158,12 @@ export default function BebidaList({ showToast , onEdit}) {
               onSearch={handleSearchMovimentacoes}
               showToast={showToast}
               bebida={selectedBebida}
+              onSave={() => {
+                setShowAddMovModalSave(false);
+                showToast("Movimentação salva com sucesso!", "success");
+                load();
+                setRefresh && setRefresh(r => !r);
+              }}
             />
           )}
         </Modal.Body>

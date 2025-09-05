@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../../services/api";
 import { Row, Col, Button, Form, Card } from "react-bootstrap";
 import { useEffect } from "react";
+import { FaSave, FaPlus } from 'react-icons/fa';
 
 export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
     const [form, setForm] = useState({
@@ -33,8 +34,6 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
                 responsavel: form.responsavel,
             });
 
-            showToast("Movimentação salva com sucesso!", "success");
-
             setForm({ bebida_id: "", tipo: "entrada", volume: "", responsavel: "" });
             onSave();
         } catch (err) {
@@ -46,7 +45,7 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
     return (
         <Card className="shadow-sm border-0 mb-4">
         <Card.Body>
-            <h4 className="mb-4">➕ Adicionar Movimentação</h4>
+            <h4 className="mb-4"><FaPlus /> Adicionar Movimentação</h4>
             <Form onSubmit={handleSubmit}>
                 <Row className="g-3">
                     <Col lg={3} md={6}>
@@ -109,7 +108,7 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
 
                 <div className="d-flex justify-content-end mt-4">
                     <Button type="submit" variant="success">
-                    💾 Salvar
+                        <FaSave /> Salvar
                     </Button>
                 </div>
             </Form>

@@ -91,7 +91,11 @@ function App() {
                 </Card>
               </Col>
               <Col lg={12}>
-                <BebidaList onEdit={setSelectedBebida} key={refresh} showToast={showToast}/>
+                <BebidaList onEdit={setSelectedBebida}
+                  showToast={showToast}
+                  setRefresh={setRefresh}
+                  refresh={refresh}
+                />
               </Col>
             </Row>
           </Tab>
