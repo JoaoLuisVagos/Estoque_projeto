@@ -10,6 +10,7 @@ Flight::route('POST /bebida/@id/update', array('BebidaController','updateEstoque
 Flight::route('DELETE /bebida/@id/delete', array('BebidaController','deleteEstoque'));
 Flight::route('GET /bebida/@id/getByID', array('BebidaController','getEstoqueById'));
 Flight::route('GET /bebidas', array('BebidaController','getAllEstoque'));
+Flight::route('GET /bebida/total/@tipo', ['BebidaController','getTotalByTipo']);
 
 //Rotas Movimentacao
 Flight::route('POST /movimentacao', array('MovimentacaoController','saveMovimentacao'));
@@ -18,5 +19,6 @@ Flight::route('DELETE /movimentacao/@id/delete', array('MovimentacaoController',
 Flight::route('GET /movimentacao/@id/getByID', array('MovimentacaoController','getMovimentacaoById'));
 Flight::route('GET /movimentacao/bebida/@id/getByID', array('MovimentacaoController','getMovimentacaoByIdBebida'));
 Flight::route('GET /movimentacoes', array('MovimentacaoController','getAllMovimentacao'));
+
 
 

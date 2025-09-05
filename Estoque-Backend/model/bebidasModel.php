@@ -4,5 +4,7 @@ class Bebida {
     public $nome;
     public $tipo;
     public $volume;
+    public $estoque_total;
+    public $excluido;
     public $responsavel;
 }

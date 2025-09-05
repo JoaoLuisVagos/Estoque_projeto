@@ -3,6 +3,8 @@ CREATE TABLE bebidas (
     nome VARCHAR(100) NOT NULL,
     tipo ENUM('alcoolica', 'nao-alcoolica') NOT NULL,
     volume INT NOT NULL,
+    estoque_total INT NOT NULL DEFAULT 0,
+    excluido INT NOT NULL DEFAULT 0,
     responsavel VARCHAR(100) NOT NULL,
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

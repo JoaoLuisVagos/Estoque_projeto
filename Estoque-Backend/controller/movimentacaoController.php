@@ -7,6 +7,7 @@ class MovimentacaoController {
         $data = Flight::request()->data->getData();
         $db  = (new Database())->getConnection(); 
         $dao = new MovimentacaoDAO($db);
+        $bebidaDao = new BebidaDAO($db);
 
         $h = new Movimentacao();
 
@@ -14,7 +15,30 @@ class MovimentacaoController {
         $h->tipo = $data['tipo'];
         $h->volume = $data['volume'];
         $h->responsavel = $data['responsavel'];
+
         try {
+            $stmtCheck = $db->prepare("SELECT id FROM bebidas WHERE id = :id");
+            $stmtCheck->bindParam(":id", $h->bebida_id, PDO::PARAM_INT);
+            $stmtCheck->execute();
+
+            if (!$stmtCheck->fetch()) {
+                Flight::halt(400, "Bebida não encontrada com ID: " . $h->bebida_id);
+            }
+
+            $bebidaId = $data['bebida_id'];
+            $tipo = $data['tipo'];
+            $volume = (int)$data['volume'];
+            $bebida = $bebidaDao->getEstoqueById($bebidaId);
+
+            if ($tipo === "saida" && $bebida['estoque_total'] < $volume) {
+                Flight::json(["error" => "Estoque insuficiente para saída"], 400);
+                return;
+            }
+
+            $novoEstoque = $tipo === "entrada" ? $bebida['estoque_total'] + $volume : $bebida['estoque_total'] - $volume;
+
+            $bebidaDao->updateEstoqueTotal($bebidaId, $novoEstoque);
+
             $dao->saveMovimentacao($h);
             Flight::halt(201); // sucesso
         } catch(Exception $e) {

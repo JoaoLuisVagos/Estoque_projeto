@@ -9,15 +9,26 @@ class BebidaController {
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
 
+        $tipo = $data['tipo'];
+        $volume = $data['volume'];
+        $volumeInicial = isset($data['volume']) ? (int)$data['volume'] : 0;
+
+        if (!$dao->hasCapacity($tipo, $volume)) {
+            $limite = $tipo === "alcoolica" ? 500 : 400;
+            Flight::json(["error" => "Capacidade da seção de {$tipo} excedida! Limite máximo: {$limite} unidades."], 400);
+            return;
+        }
+
         $bebida = new Bebida();
         $bebida->nome = $data['nome'];
         $bebida->tipo = $data['tipo'];
-        $bebida->volume = $data['volume'];
+        $bebida->volume = $volumeInicial;
+        $bebida->estoque_total = $volumeInicial;
         $bebida->responsavel = $data['responsavel'];
 
         try {
             $dao->saveEstoque($bebida);
-            Flight::halt(201); // sucesso
+            Flight::halt(201);
         } catch(Exception $e) {
             Flight::halt(500, $e->getMessage());
         }
@@ -47,7 +58,9 @@ class BebidaController {
     public static function deleteEstoque($id) {
         $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
+        $movimentacaoDao = new MovimentacaoDAO($db);
         try {
+            $movimentacaoDao->softDeleteByBebida($id);
             $dao->deleteEstoque($id);
             Flight::halt(200);
         } catch(Exception $e) {
@@ -79,5 +92,22 @@ class BebidaController {
         else
             Flight::halt(404,'Nebidas não encontradas');
     }
+
+    public function getTotalByTipo($tipo) {
+        $db  = (new Database())->getConnection(); 
+        $dao = new BebidaDAO($db);
+
+        $total = $dao->getTotalVolumeByTipo($tipo);
+        $limite = $tipo === "alcoolica" ? 500 : 400;
+        $espacoDisponivel = $limite - $total;
+
+        Flight::json([
+            "tipo" => $tipo,
+            "total" => $total,
+            "limite" => $limite,
+            "disponivel" => $espacoDisponivel
+        ]);
+    }
+
 
 }

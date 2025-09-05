@@ -96,6 +96,13 @@ class MovimentacaoDAO {
         }
     }
 
+    public function softDeleteByBebida($bebidaId) {
+        $query = "UPDATE movimentacao SET excluido = 1 WHERE bebida_id = :bebida_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":bebida_id", $bebidaId);
+        return $stmt->execute();
+    }
+
     public function getMovimentacaoById($id, $busca) {
         $filtros = $busca;
         unset($filtros['excluido']); 
@@ -148,24 +155,33 @@ class MovimentacaoDAO {
 
     public function getMovimentacaoByIdBebida($id, $busca) {
         $filtros = $busca;
-        unset($filtros['excluido']); 
+
+        $whereExtra = "";
 
         if (isset($busca['excluido'])) {
-            $excluidoFilter = "h.excluido = :excluido";
+            $whereExtra .= "h.excluido = :excluido";
+            unset($filtros['excluido']);
+        }
+
+        $filtrosWhere = prepareWhere($filtros);
+        if (!empty($filtrosWhere)) {
             if (!empty($whereExtra)) {
-                $whereExtra .= " AND " . $excluidoFilter;
+                $whereExtra .= " AND " . $filtrosWhere;
             } else {
-                $whereExtra = $excluidoFilter;
+                $whereExtra = $filtrosWhere;
             }
         }
 
-        $whereExtra = prepareWhere($filtros);
-
-        $query = "SELECT * FROM movimentacao as h INNER JOIN bebidas as b ON h.bebida_id = b.id WHERE b.id = :id";
+        $query = "SELECT h.*, b.nome as bebida 
+          FROM movimentacao as h
+          INNER JOIN bebidas as b ON h.bebida_id = b.id
+          WHERE b.id = :id";
 
         if (!empty($whereExtra)) {
+            $whereExtra = str_replace("tipo =", "h.tipo =", $whereExtra);
             $query .= " AND " . $whereExtra;
         }
+
 
         try {
             if (!$this->conn) {
@@ -178,6 +194,10 @@ class MovimentacaoDAO {
 
             if (isset($busca['excluido'])) {
                 $stmt->bindParam(":excluido", $busca['excluido']);
+            }
+
+            foreach ($filtros as $key => $value) {
+                $stmt->bindValue(":$key", $value);
             }
 
             if ($stmt->execute()) {
@@ -222,7 +242,7 @@ class MovimentacaoDAO {
         $direction = (isset($busca["direction"]) && strtoupper($busca["direction"]) === "ASC") ? "ASC" : "DESC";
 
        
-        $query = "SELECT h.id, b.nome as bebida, h.tipo, h.volume, h.responsavel, h.data_registro, h.excluido
+        $query = "SELECT h.*, b.nome as bebida
                 FROM movimentacao h
                 JOIN bebidas b ON b.id = h.bebida_id";
 
@@ -252,6 +272,4 @@ class MovimentacaoDAO {
             die;
         }   
     }
-
-
 }

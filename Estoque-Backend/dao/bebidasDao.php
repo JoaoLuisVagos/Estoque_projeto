@@ -11,7 +11,7 @@ class BebidaDAO {
     }
 
     public function saveEstoque(Bebida $bebida) {
-        $query = "INSERT INTO bebidas (nome, tipo, volume, responsavel) VALUES (:nome, :tipo, :volume, :responsavel)";
+        $query = "INSERT INTO bebidas (nome, tipo, volume, responsavel, estoque_total) VALUES (:nome, :tipo, :volume, :responsavel, :estoque_total)";
         
         try {
             if (!$this->conn) {
@@ -23,6 +23,7 @@ class BebidaDAO {
             $stmt->bindParam(":nome", $bebida->nome);
             $stmt->bindParam(":tipo", $bebida->tipo);
             $stmt->bindParam(":volume", $bebida->volume);
+            $stmt->bindParam(":estoque_total", $bebida->estoque_total);
             $stmt->bindParam(":responsavel", $bebida->responsavel);
 
             if ($stmt->execute()) {
@@ -74,7 +75,7 @@ class BebidaDAO {
     }
 
     public function deleteEstoque($id) {
-        $query = "DELETE FROM bebidas WHERE id = :id";
+        $query = "UPDATE bebidas SET excluido = 1 WHERE id = :id";
         
         try {
             if (!$this->conn) {
@@ -101,7 +102,7 @@ class BebidaDAO {
         }
     }
 
-    public function getEstoqueById($id, $busca) {
+    public function getEstoqueById($id, $busca = []) {
         $query = "SELECT * FROM bebidas WHERE id = :id";
 
         if(is_array($busca) && count($busca) > 0){
@@ -134,7 +135,7 @@ class BebidaDAO {
         }
     }
 
-    public function getAllEstoque($offset,$limit,$busca) {
+    public function getAllEstoque($offset,$limit,$busca = []) {
         
         $query = "SELECT * FROM bebidas";
 
@@ -158,5 +159,41 @@ class BebidaDAO {
             var_dump("Erro: " . $e->getMessage());
             die;
         }
+    }
+
+    public function getTotalVolumeByTipo($tipo) {
+        $query = "SELECT COALESCE(SUM(estoque_total),0) as total 
+                FROM bebidas 
+                WHERE tipo = :tipo AND excluido = 0";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":tipo", $tipo);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$row['total'];
+    }
+
+    public function hasCapacity($tipo, $novoVolume) {
+        $limite = $tipo === "alcoolica" ? 500 : 400;
+        $totalAtual = $this->getTotalVolumeByTipo($tipo);
+        return ($totalAtual + $novoVolume) <= $limite;
+    }
+
+    public function hasDifferentTypeStored($tipo) {
+        $query = "SELECT COUNT(*) as qtd 
+                FROM bebidas 
+                WHERE tipo != :tipo AND excluido = 0";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":tipo", $tipo);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['qtd'] > 0;
+    }
+
+    public function updateEstoqueTotal($id, $novoEstoque) {
+        $query = "UPDATE bebidas SET estoque_total = :estoque WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":estoque", $novoEstoque);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 }
