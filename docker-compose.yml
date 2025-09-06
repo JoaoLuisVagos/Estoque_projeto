@@ -27,7 +27,7 @@ services:
     build: ./Estoque-Frontend
     container_name: estoque-frontend
     ports:
-      - "5174:5173"
+      - "5173:5173"
     volumes:
       - ./Estoque-Frontend:/app
       - /app/node_modules
