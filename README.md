@@ -43,7 +43,7 @@ Sistema de gestão de estoque de bebidas, com frontend em React (Vite), backend 
    ```
 
 3. **Acesse no navegador:**
-   - Frontend: [http://localhost:5174](http://localhost:5174)
+   - Frontend: [http://localhost:5173](http://localhost:5173)
    - Backend/API: [http://localhost:8081](http://localhost:8081)
 
 4. **Banco de dados:**
