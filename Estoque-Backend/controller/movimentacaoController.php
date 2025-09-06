@@ -38,7 +38,7 @@ class MovimentacaoController {
 
             $tipo_bebida = $bebida['tipo_bebida'];
 
-            if (!$bebidaDao->hasCapacity($tipo_bebida, $data['volume'])) {
+            if ($tipo === "entrada" && !$bebidaDao->hasCapacity($tipo_bebida, $data['volume'])) {
                 $limite = $tipo_bebida === "alcoolica" ? 500 : 400;
                 Flight::json(["error" => "Capacidade da seção de {$tipo} excedida! Limite máximo: {$limite} unidades."], 400);
                 return;
