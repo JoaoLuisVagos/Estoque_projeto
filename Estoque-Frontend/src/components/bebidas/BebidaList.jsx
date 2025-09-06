@@ -44,13 +44,12 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
 
   useEffect(() => {
     load();
-  }, [tipo_bebida]);
+  }, [tipo_bebida, refresh]);
 
   return (
     <div>
       <h2 className="mb-3"><FaBox /> Estoque de Bebidas</h2>
 
-      {/* Seletor de tipo de bebida */}
       <Col lg={2} className="mb-3">
         <Form.Select
           value={tipo_bebida}
@@ -61,7 +60,6 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
         </Form.Select>
       </Col>
 
-      {/* Tabela de bebidas */}
       <div className="table-responsive mt-4">
         <Table striped bordered hover>
           <thead>
@@ -161,7 +159,6 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
               bebida={selectedBebida}
               onSave={() => {
                 setShowAddMovModalSave(false);
-                showToast("Movimentação salva com sucesso!", "success");
                 load();
                 setRefresh && setRefresh(r => !r);
               }}

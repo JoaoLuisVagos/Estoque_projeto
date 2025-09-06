@@ -25,6 +25,7 @@ class MovimentacaoController {
                 Flight::halt(400, "Bebida não encontrada com ID: " . $h->bebida_id);
             }
 
+
             $bebidaId = $data['bebida_id'];
             $tipo = $data['tipo'];
             $volume = (int)$data['volume'];
@@ -32,6 +33,14 @@ class MovimentacaoController {
 
             if ($tipo === "saida" && $bebida['estoque_total'] < $volume) {
                 Flight::json(["error" => "Estoque insuficiente para saída"], 400);
+                return;
+            }
+
+            $tipo_bebida = $bebida['tipo_bebida'];
+
+            if (!$bebidaDao->hasCapacity($tipo_bebida, $data['volume'])) {
+                $limite = $tipo_bebida === "alcoolica" ? 500 : 400;
+                Flight::json(["error" => "Capacidade da seção de {$tipo} excedida! Limite máximo: {$limite} unidades."], 400);
                 return;
             }
 

@@ -35,10 +35,12 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
             });
 
             setForm({ bebida_id: "", tipo: "entrada", volume: "", responsavel: "" });
+            showToast("Movimentação salva com sucesso!", "success");
             onSave();
         } catch (err) {
             const mensagemErro = err.response?.data?.error || "Erro desconhecido";
             showToast(mensagemErro, "danger");
+            onSave();
         }
     };
 
