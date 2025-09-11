@@ -31,6 +31,7 @@ services:
     volumes:
       - ./Estoque-Frontend:/app
       - /app/node_modules
+      - ./Estoque-Frontend/.env
     command: npm run dev -- --host
     depends_on:
       - backend

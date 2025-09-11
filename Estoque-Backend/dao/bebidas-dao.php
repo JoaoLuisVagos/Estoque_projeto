@@ -7,21 +7,22 @@ class BebidaDAO {
     public function __construct($db) {
         $this->conn = $db;
     }
-    public function criarBebida(Bebida $b) {
-        $query = "INSERT INTO bebidas (nome, tipo_bebida, estoque_total, excluido, responsavel, data_registro) 
-                VALUES (:nome, :tipo_bebida, :estoque_total, :excluido, :responsavel, :data_registro)";
+    public function criarBebida(Bebida $bebida) {
+        $query = "INSERT INTO bebidas (nome, tipo_bebida, estoque_total, excluido, responsavel, data_registro, imagem)
+                VALUES (:nome, :tipo_bebida, :estoque_total, :excluido, :responsavel, :data_registro, :imagem)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":nome", $b->nome);
-        $stmt->bindParam(":tipo_bebida", $b->tipo_bebida);
-        $stmt->bindParam(":estoque_total", $b->estoque_total);
-        $stmt->bindParam(":excluido", $b->excluido);
-        $stmt->bindParam(":responsavel", $b->responsavel);
-        $stmt->bindParam(":data_registro", $b->data_registro);
+        $stmt->bindParam(':nome', $bebida->nome);
+        $stmt->bindParam(':tipo_bebida', $bebida->tipo_bebida);
+        $stmt->bindParam(':estoque_total', $bebida->estoque_total);
+        $stmt->bindParam(':excluido', $bebida->excluido);
+        $stmt->bindParam(':responsavel', $bebida->responsavel);
+        $stmt->bindParam(':data_registro', $bebida->data_registro);
+        $stmt->bindParam(':imagem', $bebida->imagem);
         return $stmt->execute();
     }
 
     public function atualizarBebida(Bebida $b) {
-        $query = "UPDATE bebidas SET nome = :nome, tipo_bebida = :tipo_bebida, estoque_total = :estoque_total, excluido = :excluido, responsavel = :responsavel, data_registro = :data_registro WHERE id = :id";
+        $query = "UPDATE bebidas SET nome = :nome, tipo_bebida = :tipo_bebida, estoque_total = :estoque_total, excluido = :excluido, responsavel = :responsavel, data_registro = :data_registro, imagem = :imagem WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":nome", $b->nome);
         $stmt->bindParam(":tipo_bebida", $b->tipo_bebida);
@@ -29,6 +30,7 @@ class BebidaDAO {
         $stmt->bindParam(":excluido", $b->excluido);
         $stmt->bindParam(":responsavel", $b->responsavel);
         $stmt->bindParam(":data_registro", $b->data_registro);
+        $stmt->bindParam(":imagem", $b->imagem);
         $stmt->bindParam(":id", $b->id);
         return $stmt->execute();
     }
@@ -55,7 +57,7 @@ class BebidaDAO {
     }
 
     public function getEstoqueById($id) {
-        $query = "SELECT id, nome, tipo_bebida, estoque_total FROM bebidas WHERE id = :id AND excluido = 0";
+        $query = "SELECT id, nome, tipo_bebida, estoque_total, imagem FROM bebidas WHERE id = :id AND excluido = 0";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -87,6 +89,14 @@ class BebidaDAO {
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (float) $row['total'];
+    }
+
+    public function atualizarImagem($id, $imagem) {
+        $query = "UPDATE bebidas SET imagem = :imagem WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":imagem", $imagem);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 }
 ?>

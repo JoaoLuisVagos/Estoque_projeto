@@ -16,6 +16,17 @@ Flight::route('POST /api/login', function(){
     (new AuthController())->login($data);
 });
 
+Flight::route('GET /imagens/@filename', function($filename){
+    $path = __DIR__ . '/../public/imagens/' . $filename;
+    if (!file_exists($path)) {
+        Flight::halt(404, "Imagem não encontrada.");
+    }
+    $mime = mime_content_type($path);
+    header("Content-Type: $mime");
+    readfile($path);
+    exit;
+});
+
 
 //Rotas para criação de bebidas
 Flight::route('POST /bebida', array('BebidasController','criarBebida'));

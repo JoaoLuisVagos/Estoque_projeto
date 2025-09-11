@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS bebidas (
     estoque_total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     excluido INT NOT NULL DEFAULT 0,
     responsavel VARCHAR(100) NOT NULL,
+    imagem VARCHAR(255) DEFAULT NULL,
     data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

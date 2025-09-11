@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import React from 'react';
 import api from "../../services/api";
 import { Row, Col, Button, Form, Card } from "react-bootstrap";
@@ -7,9 +7,12 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
   const [form, setForm] = useState({
     nome: "",
     tipo_bebida: "alcoolica",
-    volume: "",
+    estoque_total: "",
     responsavel: "",
+    imagem: "",
   });
+  const [imagemPreview, setImagemPreview] = useState(bebida?.imagem ? `${import.meta.env.VITE_API_URL}/imagens/${bebida.imagem}` : null);
+  const fileInputRef = useRef();
 
   useEffect(() => {
     if (bebida) {
@@ -18,16 +21,28 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
         tipo_bebida: bebida.tipo_bebida || "alcoolica",
         estoque_total: bebida.estoque_total || "",
         responsavel: bebida.responsavel || "",
+        imagem: bebida.imagem || "",
       });
+      setImagemPreview(bebida.imagem ? `${import.meta.env.VITE_API_URL}/imagens/${bebida.imagem}` : null);
     } else {
       setForm({
         nome: "",
         tipo_bebida: "alcoolica",
         estoque_total: "",
         responsavel: "",
+        imagem: "",
       });
+      setImagemPreview(null);
     }
   }, [bebida]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImagemPreview(URL.createObjectURL(file));
+      setForm({ ...form, imagemFile: file });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,24 +53,29 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
     }
 
     try {
+      const data = new FormData();
+      data.append("nome", form.nome);
+      data.append("tipo_bebida", form.tipo_bebida);
+      data.append("estoque_total", form.estoque_total);
+      data.append("responsavel", form.responsavel);
+      if (form.imagemFile) {
+        data.append("imagem", form.imagemFile);
+      }
+
       if (bebida && bebida.id) {
-        await api.post(`/bebida/${bebida.id}/update`, {
-          nome: form.nome,
-          tipo_bebida: form.tipo_bebida,
-          estoque_total: Number(form.estoque_total),
-          responsavel: form.responsavel,
+        await api.post(`/bebida/${bebida.id}/update`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
         showToast("Bebida atualizada com sucesso!", "success");
       } else {
-        await api.post("/bebida", {
-          nome: form.nome,
-          tipo_bebida: form.tipo_bebida,
-          estoque_total: Number(form.estoque_total),
-          responsavel: form.responsavel,
+        await api.post("/bebida", data, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
         showToast("Bebida salva com sucesso!", "success");
       }
-      setForm({ nome: "", tipo_bebida: "alcoolica", estoque_total: "", responsavel: "" });
+
+      setForm({ nome: "", tipo_bebida: "alcoolica", estoque_total: "", responsavel: "", imagem: "" });
+      setImagemPreview(null);
       onSave();
     } catch (err) {
       const mensagemErro = err.response?.data || "Erro desconhecido";
@@ -69,6 +89,25 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
         <h4 className="mb-4">{bebida ? "Editar Bebida" : "Adicionar Bebida"}</h4>
         <Form onSubmit={handleSubmit}>
           <Row className="g-3">
+            <Col lg={2} className="d-flex align-items-center">
+              <Form.Group className="w-100 text-center">
+                <Form.Label>Imagem</Form.Label>
+                <div className="bebida-img-preview-box">
+                  {imagemPreview ? (
+                    <img src={imagemPreview} alt="Imagem da bebida" />
+                  ) : (
+                    <span style={{ color: "#bbb" }}>Prévia</span>
+                  )}
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="bebida-img-file-input"
+                    title="Escolher imagem"
+                  />
+                </div>
+              </Form.Group>
+            </Col>
             <Col lg={2}>
               <Form.Group>
                 <Form.Label>Nome</Form.Label>
@@ -123,6 +162,16 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
           </Row>
 
           <div className="d-flex justify-content-end mt-4">
+            <Button variant="secondary" className="me-2" onClick={() => {
+              setForm({ nome: "", tipo_bebida: "alcoolica", estoque_total: "", responsavel: "", imagem: "" });
+              setImagemPreview(null);
+              if (fileInputRef.current) {
+                fileInputRef.current.value = null;
+              }
+              onSave();
+            }}>
+              Cancelar
+            </Button>
             <Button type="submit" variant="primary">
               {bebida ? "Editar" : "Salvar"}
             </Button>
