@@ -7,6 +7,7 @@ import MovimentacaoList from "./components/movimentacoes/movimentacao-list";
 import api from "./services/api";
 import { FaBeer, FaChartBar, FaCoffee } from 'react-icons/fa';
 import Login from "./components/login/login";
+import Register from "./components/login/register";
 import { isAuthenticated, logout } from "./services/auth";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const [tabKey, setTabKey] = useState("bebidas");
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [movimentacoesFiltradas, setMovimentacoesFiltradas] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
 
   const [totais, setTotais] = useState({
     alcoolica: { total: 0, limite: 500, disponivel: 500 },
@@ -47,7 +49,13 @@ function App() {
     if (auth) loadTotais();
   }, [auth, refresh]);
 
-  if (!auth) return <Login onLogin={() => setAuth(true)} />;
+  if (!auth) {
+    return showRegister ? (
+      <Register onRegister={() => setShowRegister(false)} />
+    ) : (
+      <Login onLogin={() => setAuth(true)} onShowRegister={() => setShowRegister(true)} />
+    );
+  }
 
   return (
     <>

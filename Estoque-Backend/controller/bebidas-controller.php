@@ -71,13 +71,15 @@ class BebidasController {
     }
 
     public static function excluirBebida($id) {
-        $db = (new Database())->getConnection();
+        $db  = (new Database())->getConnection(); 
         $dao = new BebidaDAO($db);
-
-        if ($dao->excluirBebida($id)) {
-            Flight::json(['mensagem' => 'Bebida excluída com sucesso']);
-        } else {
-            Flight::halt(500, 'Erro ao excluir bebida');
+        $movimentacaoDao = new MovimentacaoDAO($db);
+        try {
+            $movimentacaoDao->softDeleteByBebida($id);
+            $dao->excluirBebida($id);
+            Flight::halt(200);
+        } catch(Exception $e) {
+            Flight::halt(500, $e->getMessage());
         }
     }
 

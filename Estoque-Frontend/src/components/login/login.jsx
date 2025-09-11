@@ -3,7 +3,7 @@ import { Form, Button, Card, Alert } from "react-bootstrap";
 import { login } from "../../services/auth";
 import Register from "./register";
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin , onShowRegister}) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -65,10 +65,10 @@ export default function Login({ onLogin }) {
             </Button>
             <Button
               variant="link"
-              className="w-100"
-              onClick={() => setShowRegister(true)}
+              onClick={onShowRegister}
+              style={{ padding: 0, fontSize: "1em" }}
             >
-              Criar Conta
+              Cadastre-se
             </Button>
           </Form>
         </Card.Body>

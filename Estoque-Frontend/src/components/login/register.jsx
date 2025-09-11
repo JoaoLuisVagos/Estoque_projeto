@@ -22,11 +22,13 @@ export default function Register({ onRegister }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/register", form);
+      await api.post("/api/registrar", form);
       setTipoMensagem("success");
-      setMensagem("Usuário criado com sucesso! Faça login.");
+      setMensagem("Usuário criado com sucesso! Redirecionando para login...");
       setForm({ nome: "", email: "", senha: "" });
-      if (onRegister) onRegister();
+      setTimeout(() => {
+        if (onRegister) onRegister();
+      }, 1500);
     } catch (err) {
       setTipoMensagem("danger");
       setMensagem(err.response?.data?.error || "Erro ao criar usuário");
