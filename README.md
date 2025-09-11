@@ -48,8 +48,8 @@ Sistema completo para gestão de estoque de bebidas, com frontend em React (Vite
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://gitlab.com/joaoluisvagos/EstoqueBebibas.git
-   cd EstoqueBebibas
+   git clone https://gitlab.com/JoaoLuisVagos/EstoqueBebidas.git
+   cd EstoqueBebidas
    ```
 
 2. **Suba os containers:**
