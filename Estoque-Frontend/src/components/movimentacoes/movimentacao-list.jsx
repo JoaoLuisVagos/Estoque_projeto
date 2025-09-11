@@ -68,6 +68,8 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
   const getTipoLabel = (tipo) => {
     if (tipo === "entrada") return "Entrada";
     if (tipo === "saida") return "Saída";
+    if (tipo === "alcoolica") return "Álcoolica";
+    if (tipo === "nao-alcoolica") return "Não Alcoólica";
     return tipo;
   };
 
@@ -83,6 +85,18 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
             <th onClick={() => handleSort("tipo")} style={{ cursor: "pointer" }}>
               Tipo
               {sortIcon("tipo")}
+            </th>
+            <th onClick={() => handleSort("bebida_id")} style={{ cursor: "pointer" }} width="5%">
+              Id Bebida
+              {sortIcon("bebida_id")}
+            </th>
+            <th onClick={() => handleSort("bebida")} style={{ cursor: "pointer" }}>
+              Bebida
+              {sortIcon("bebida")}
+            </th>
+            <th onClick={() => handleSort("tipo_bebida")} style={{ cursor: "pointer" }}>
+              Tipo Bebida
+              {sortIcon("tipo_bebida")}
             </th>
             <th onClick={() => handleSort("volume")} style={{ cursor: "pointer" }}>
               Volume
@@ -113,6 +127,9 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
               >
                 <td>{m.id}</td>
                 <td>{getTipoLabel(m.tipo)}</td>
+                <td>{m.bebida_id}</td>
+                <td>{m.bebida}</td>
+                <td>{getTipoLabel(m.tipo_bebida)}</td>
                 <td>{m.volume}</td>
                 <td>{m.responsavel}</td>
                 <td>{new Date(m.data_registro).toLocaleString("pt-BR")}</td>
