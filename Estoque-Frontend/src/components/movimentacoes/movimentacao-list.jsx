@@ -65,6 +65,12 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
   const sortIcon = (field) =>
     sortField === field ? (sortOrder === "asc" ? " ▲" : " ▼") : "";
 
+  const getTipoLabel = (tipo) => {
+    if (tipo === "entrada") return "Entrada";
+    if (tipo === "saida") return "Saída";
+    return tipo;
+  };
+
   return (
     <div>
       <Table striped bordered hover>
@@ -95,9 +101,18 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
         <tbody>
           {sortedList.length > 0 ? (
             sortedList.map((m) => (
-              <tr key={m.id}>
+              <tr
+                key={m.id}
+                className={
+                  m.tipo === "saida"
+                    ? "table-danger"
+                    : m.tipo === "entrada"
+                    ? "table-success"
+                    : ""
+                }
+              >
                 <td>{m.id}</td>
-                <td>{m.tipo}</td>
+                <td>{getTipoLabel(m.tipo)}</td>
                 <td>{m.volume}</td>
                 <td>{m.responsavel}</td>
                 <td>{new Date(m.data_registro).toLocaleString("pt-BR")}</td>
