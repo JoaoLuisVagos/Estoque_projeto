@@ -6,7 +6,7 @@ import { FaSearch } from "react-icons/fa";
 
 export default function MovimentacaoForm({ onSearch, showToast }) {
   const [form, setForm] = useState({
-    bebida_id: "",
+    bebida: "",
     tipo: "entrada",
   });
 
@@ -14,13 +14,13 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
     e.preventDefault();
 
     try {
-      let url = form.bebida_id ? `/movimentacao/bebida/${form.bebida_id}/getByID?excluido=0` : "/movimentacoes?excluido=0";
+      let url = form.bebida ? `/movimentacao/bebida/${form.bebida}/getByID?excluido=0` : "/movimentacoes?excluido=0";
       let payload = {};
       if (form.tipo) {
         payload.tipo = form.tipo;
       }
-      if(form.bebida_id) {
-        payload.bebida_id = form.bebida_id;
+      if(form.bebida) {
+        payload.bebida = form.bebida;
       }
       const res = await api.get(url, { params: payload });
 
@@ -41,11 +41,11 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
               <Form.Group>
                 <Form.Label>Bebida</Form.Label>
                 <Form.Control
-                  type="number"
-                  placeholder="ID da bebida"
-                  value={form.bebida_id}
+                  type="text"
+                  placeholder="ID ou nome da bebida"
+                  value={form.bebida}
                   onChange={(e) =>
-                    setForm({ ...form, bebida_id: e.target.value })
+                    setForm({ ...form, bebida: e.target.value })
                   }
                 />
               </Form.Group>

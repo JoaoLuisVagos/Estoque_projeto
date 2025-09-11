@@ -29,7 +29,7 @@ export default function MovimentacaoList({ bebidaId, movimentacoes }) {
     }
   };
 
-  const lista = movimentacoes ?? movs;
+  const lista = movimentacoes && movimentacoes.length > 0 ? movimentacoes : movs;
 
   useEffect(() => {
     load();

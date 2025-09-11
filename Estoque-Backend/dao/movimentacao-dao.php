@@ -131,11 +131,17 @@ class MovimentacaoDAO {
             die;
         }
     }
-
-    public function getMovimentacaoByIdBebida($id, $busca) {
+    public function getMovimentacaoByIdBebida($idOuNome, $busca) {
         $filtros = $busca;
-
         $whereExtra = "";
+
+        if (isset($filtros['bebida'])) {
+            if (!is_numeric($filtros['bebida'])) {
+                $filtros['b.nome'] = $filtros['bebida'];
+            }
+            unset($filtros['bebida']);
+        }
+
 
         if (isset($busca['excluido'])) {
             $whereExtra .= "h.excluido = :excluido";
@@ -159,17 +165,24 @@ class MovimentacaoDAO {
         $direction = (isset($busca["direction"]) && strtoupper($busca["direction"]) === "ASC") ? "ASC" : "DESC";
 
         $query = "SELECT h.*, b.nome as bebida, b.tipo_bebida as tipo_bebida
-          FROM movimentacao as h
-          INNER JOIN bebidas as b ON h.bebida_id = b.id
-          WHERE b.id = :id";
+            FROM movimentacao as h
+            INNER JOIN bebidas as b ON h.bebida_id = b.id
+            WHERE ";
+
+        if (is_numeric($idOuNome)) {
+            $query .= "b.id = :idOuNome";
+        } else {
+            $query .= "b.nome LIKE :idOuNome";
+        }
 
         if (!empty($whereExtra)) {
             $whereExtra = str_replace("tipo =", "h.tipo =", $whereExtra);
+            // Troca '=' por 'LIKE' para b.nome
+            $whereExtra = str_replace("b.nome = :b.nome", "b.nome LIKE :b_nome", $whereExtra);
             $query .= " AND " . $whereExtra;
         }
 
         $query .= " ORDER BY $orderBy $direction";
-
 
         try {
             if (!$this->conn) {
@@ -178,14 +191,24 @@ class MovimentacaoDAO {
 
             $stmt = $this->conn->prepare($query);
 
-            $stmt->bindParam(":id", $id);
+            if (is_numeric($idOuNome)) {
+                $stmt->bindParam(":idOuNome", $idOuNome);
+            } else {
+                $like = "%$idOuNome%";
+                $stmt->bindParam(":idOuNome", $like);
+            }
 
             if (isset($busca['excluido'])) {
                 $stmt->bindParam(":excluido", $busca['excluido']);
             }
 
+            // Só faz bind dos parâmetros que realmente existem na query
             foreach ($filtros as $key => $value) {
-                $stmt->bindValue(":$key", $value);
+                if ($key === 'b.nome' && strpos($query, ":b_nome") !== false) {
+                    $stmt->bindValue(":b_nome", "%$value%");
+                } elseif (strpos($query, ":$key") !== false) {
+                    $stmt->bindValue(":$key", $value);
+                }
             }
 
             if ($stmt->execute()) {
