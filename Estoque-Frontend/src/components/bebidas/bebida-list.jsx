@@ -26,7 +26,7 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
         res.data.filter(b => b.tipo_bebida === tipo_bebida && String(b.excluido) === "0")
       );
     } catch (err) {
-      showToast(err.response?.data?.error || "Erro ao carregar bebidas", "danger");
+      showToast(err.response?.data || "Erro ao carregar bebidas", "danger");
     }
   };
 
@@ -38,7 +38,7 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
       load();
       setRefresh && setRefresh(r => !r);
     } catch (err) {
-      showToast(err.response?.data?.error || "Erro ao excluir bebida", "danger");
+      showToast(err.response?.data || "Erro ao excluir bebida", "danger");
     }
   };
 
@@ -190,7 +190,7 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
         </Modal.Header>
         <Modal.Body>
           {selectedBebida && (
-            <MovimentacaoList bebidaId={selectedBebida.id} tipo_bebida={tipo_bebida} />
+            <MovimentacaoList bebidaId={selectedBebida.id} />
           )}
         </Modal.Body>
       </Modal>

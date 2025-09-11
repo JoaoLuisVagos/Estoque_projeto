@@ -130,7 +130,6 @@ function App() {
               </Col>
               <Col lg={12}>
                 <MovimentacaoList
-                  bebidaId={selectedBebida?.id}
                   movimentacoes={movimentacoesFiltradas}
                   key={refresh}
                 />

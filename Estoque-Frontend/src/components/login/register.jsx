@@ -30,8 +30,12 @@ export default function Register({ onRegister }) {
         if (onRegister) onRegister();
       }, 1500);
     } catch (err) {
+      let mensagemErro = err.response?.data || "Erro desconhecido";
+      if (typeof mensagemErro === "object" && mensagemErro !== null) {
+        mensagemErro = mensagemErro.erro || JSON.stringify(mensagemErro);
+      }
       setTipoMensagem("danger");
-      setMensagem(err.response?.data?.error || "Erro ao criar usuário");
+      setMensagem(mensagemErro || "Erro ao criar usuário");
     }
   };
 

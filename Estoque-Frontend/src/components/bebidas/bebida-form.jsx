@@ -78,7 +78,10 @@ export default function BebidaForm({ onSave, showToast, bebida }) {
       setImagemPreview(null);
       onSave();
     } catch (err) {
-      const mensagemErro = err.response?.data || "Erro desconhecido";
+      let mensagemErro = err.response?.data || "Erro desconhecido";
+      if (typeof mensagemErro === "object" && mensagemErro !== null) {
+        mensagemErro = mensagemErro.erro || JSON.stringify(mensagemErro);
+      }
       showToast(mensagemErro, "danger");
     }
   };

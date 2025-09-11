@@ -38,7 +38,10 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
             showToast("Movimentação salva com sucesso!", "success");
             onSave();
         } catch (err) {
-            const mensagemErro = err.response?.data?.error || "Erro desconhecido";
+            let mensagemErro = err.response?.data || "Erro desconhecido";
+            if (typeof mensagemErro === "object" && mensagemErro !== null) {
+            mensagemErro = mensagemErro.erro || JSON.stringify(mensagemErro);
+            }
             showToast(mensagemErro, "danger");
             onSave();
         }

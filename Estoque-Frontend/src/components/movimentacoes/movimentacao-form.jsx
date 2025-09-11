@@ -26,7 +26,10 @@ export default function MovimentacaoForm({ onSearch, showToast }) {
 
       onSearch(res.data);
     } catch (err) {
-      const mensagemErro = err.response?.data?.error || "Erro desconhecido";
+      let mensagemErro = err.response?.data || "Erro desconhecido";
+      if (typeof mensagemErro === "object" && mensagemErro !== null) {
+        mensagemErro = mensagemErro.erro || JSON.stringify(mensagemErro);
+      }
       showToast(mensagemErro, "danger");
     }
   };
