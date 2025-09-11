@@ -16,6 +16,9 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
   const [showAddMovModalList, setShowAddMovModalList] = useState(false);
   const [movimentacoes, setMovimentacoes] = useState([]);
 
+  const [sortField, setSortField] = useState("id");
+  const [sortOrder, setSortOrder] = useState("asc");
+
   const load = async () => {
     try {
       const res = await api.get("/bebidas");
@@ -47,6 +50,35 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
     load();
   }, [tipo_bebida, refresh]);
 
+  const sortedBebidas = [...bebidas].sort((a, b) => {
+    let aValue = a[sortField];
+    let bValue = b[sortField];
+
+    if (sortField === "estoque_total" || sortField === "id") {
+      aValue = Number(aValue);
+      bValue = Number(bValue);
+    } else if (typeof aValue === "string" && typeof bValue === "string") {
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
+    }
+
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortIcon = (field) =>
+    sortField === field ? (sortOrder === "asc" ? " ▲" : " ▼") : "";
+
   return (
     <div>
       <h2 className="mb-3"><FaBox /> Estoque de Bebidas</h2>
@@ -65,22 +97,37 @@ export default function BebidaList({ showToast , onEdit, setRefresh, refresh }) 
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th width="50px" className="text-center">#</th>
-              <th>Nome</th>
-              <th width="150px">Estoque Atual</th>
-              <th width="400px">Responsável</th>
-              <th width="200px" className="text-center">Ações</th>
+              <th width="50px" className="text-center" style={{ cursor: "pointer" }} onClick={() => handleSort("id")}>
+                #
+                {sortIcon("id")}
+              </th>
+              <th style={{ cursor: "pointer" }} onClick={() => handleSort("nome")}>
+                Nome
+                {sortIcon("nome")}
+              </th>
+              <th width="150px" style={{ cursor: "pointer" }} onClick={() => handleSort("estoque_total")}>
+                Estoque Atual
+                {sortIcon("estoque_total")}
+              </th>
+              <th width="400px" style={{ cursor: "pointer" }} onClick={() => handleSort("responsavel")}>
+                Responsável
+                {sortIcon("responsavel")}
+              </th>
+              <th width="200px" className="text-center">
+                Ações
+              </th>
             </tr>
           </thead>
           <tbody>
-            {bebidas.length > 0 ? (
-              bebidas.map(b => (
+            {sortedBebidas.length > 0 ? (
+              sortedBebidas.map(b => (
                 <tr key={b.id}>
                   <td className="text-center">{b.id}</td>
                   <td>{b.nome}</td>
                   <td>{b.estoque_total} L</td>
                   <td>{b.responsavel}</td>
                   <td className="text-center">
+                    {/* ...botões de ação... */}
                     <Button
                       variant="primary"
                       size="sm"
