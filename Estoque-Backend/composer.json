@@ -1,5 +1,9 @@
 {
     "require": {
-        "flightphp/core": "^3.17"
+        "flightphp/core": "^3.17",
+        "firebase/php-jwt": "^6.11"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.3"
     }
 }

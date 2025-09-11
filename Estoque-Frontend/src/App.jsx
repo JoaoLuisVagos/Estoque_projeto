@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import { Container, Card, Tabs, Tab, Toast, ToastContainer, Row, Col } from "react-bootstrap";
-import BebidaForm from "./components/bebidas/BebidaForm";
-import BebidaList from "./components/bebidas/BebidaList";
-import MovimentacaoForm from "./components/movimentacoes/MovimentacaoForm";
-import MovimentacaoList from "./components/movimentacoes/MovimentacaoList";
+import BebidaForm from "./components/bebidas/bebida-form";
+import BebidaList from "./components/bebidas/bebida-list";
+import MovimentacaoForm from "./components/movimentacoes/movimentacao-form";
+import MovimentacaoList from "./components/movimentacoes/movimentacao-list";
 import api from "./services/api";
 import { FaBeer, FaChartBar, FaCoffee } from 'react-icons/fa';
+import Login from "./components/login/login";
+import { isAuthenticated, logout } from "./services/auth";
 
 function App() {
+  const [auth, setAuth] = useState(isAuthenticated());
   const [refresh, setRefresh] = useState(false);
   const [selectedBebida, setSelectedBebida] = useState(null);
   const [tabKey, setTabKey] = useState("bebidas");
@@ -41,15 +44,20 @@ function App() {
   };
 
   useEffect(() => {
-    loadTotais();
-  }, [refresh]);
+    if (auth) loadTotais();
+  }, [auth, refresh]);
+
+  if (!auth) return <Login onLogin={() => setAuth(true)} />;
 
   return (
     <>
       <Container fluid className="min-vh-100 d-flex flex-column py-4">
         <Row className="mb-4">
           <Col>
-            <h1 className="text-center"><FaChartBar /> Gestão de Estoque</h1>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h1 className="text-center"><FaChartBar /> Gestão de Estoque</h1>
+              <button className="btn btn-danger" onClick={() => { logout(); setAuth(false); }}>Logout</button>
+            </div>
           </Col>
         </Row>
         <Row className="mb-4">

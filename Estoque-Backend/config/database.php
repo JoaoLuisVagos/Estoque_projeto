@@ -1,6 +1,6 @@
 <?php
 class Database {
-    private $host = "mysql";
+    private $host = "estoque-mysql";
     private $db_name = "estoque";
     private $username = "estoque_user";
     private $password = "estoque_pass";
