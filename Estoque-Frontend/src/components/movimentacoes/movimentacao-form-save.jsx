@@ -81,12 +81,13 @@ export default function MovimentacaoFormSave({ onSave, showToast , bebida}) {
                             <Form.Label>Volume</Form.Label>
                             <Form.Control
                                 type="number"
-                                placeholder="Ex: 10"
+                                step="0.01"
+                                placeholder="Ex: 10.5"
                                 value={form.volume}
                                 onChange={(e) =>
                                     setForm({ ...form, volume: e.target.value })
                                 }
-                                min="1"
+                                min="0.01"
                                 required
                             />
                         </Form.Group>
